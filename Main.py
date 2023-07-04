@@ -29,6 +29,7 @@ def rename(cat):
         title = subcat.title()
         text = subcat.text
         newText = text.replace("Éxupéry", "Exupéry")
+        print(title)
 
         # renaming subcat
         if subcat.text != newText:
@@ -36,18 +37,18 @@ def rename(cat):
             subcat.save("Éxupéry > Exupéry: edit category")
         
         titleTarget = title.replace("Éxupéry", "Exupéry")
+
+        # updating text of every page included in subcat
+        subcatobj = pagegenerators.CategorizedPageGenerator(subcat)
+        for page in subcatobj:
+            print(page.title())
+            text = page.text
+            newText = text.replace("Éxupéry", "Exupéry")
+            if page.text != newText:
+                page.text = newText    
+                page.save("Éxupéry > Exupéry: edit file")
+
         if titleTarget != title:
-
-            # updating text of every page included in subcat
-            subcatobj = pagegenerators.CategorizedPageGenerator(subcat)
-            for page in subcatobj:
-                print(page.title())
-                text = page.text
-                newText = text.replace("Éxupéry", "Exupéry")
-                if page.text != newText:
-                    page.text = newText    
-                    page.save("Éxupéry > Exupéry: edit file")
-
             # rename current subcat
             move(title, titleTarget, "Éxupéry > Exupéry: move category")
 
