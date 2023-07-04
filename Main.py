@@ -4,19 +4,35 @@ from pywikibot import pagegenerators
 site = pywikibot.Site(u'commons', u'commons')
 site.login()
 
-# move the current name to a new name
-def move(title, newCategoryName, summary, noredirect=True):
+# move the current name to a new name - category
+def moveCategory(title, newTitle, summary, noredirect=True):
     page = pywikibot.Category(site, title)
     try:
         page = pywikibot.site.APISite.movepage(
         site,
         page=page,
-        newtitle=newCategoryName,
+        newtitle=newTitle,
         summary=summary,
         noredirect=noredirect
     )
     except:
-        print("bof man", newCategoryName)
+        print("bof man", newTitle)
+
+    return page
+
+# move the current name to a new name - file
+def moveFile(title, newTitle, summary, noredirect=True):
+    page = pywikibot.Page(site, title)
+    try:
+        page = pywikibot.site.APISite.movepage(
+        site,
+        page=page,
+        newtitle=newTitle,
+        summary=summary,
+        noredirect=noredirect
+    )
+    except:
+        print("bof man", newTitle)
 
     return page
 
@@ -26,34 +42,39 @@ def rename(cat):
     for subcat in cat.subcategories():
         
         # get title & text
-        title = subcat.title()
+        titleSource = subcat.title()
         text = subcat.text
         newText = text.replace("Éxupéry", "Exupéry")
-        print(title)
+        print(titleSource)
 
         # renaming subcat
         if subcat.text != newText:
             subcat.text = newText    
             subcat.save("Éxupéry > Exupéry: edit category")
         
-        titleTarget = title.replace("Éxupéry", "Exupéry")
+        titleTarget = titleSource.replace("Éxupéry", "Exupéry")
 
         # updating text of every page included in subcat
         subcatobj = pagegenerators.CategorizedPageGenerator(subcat)
         for page in subcatobj:
-            print(page.title())
+            
             text = page.text
             newText = text.replace("Éxupéry", "Exupéry")
+            newTitle = page.title().replace("Éxupéry", "Exupéry")
+
             if page.text != newText:
                 page.text = newText    
                 page.save("Éxupéry > Exupéry: edit file")
 
-        if titleTarget != title:
+            if page.title() != newTitle:
+                moveFile(page.title(), newTitle, "Éxupéry > Exupéry: move file", False)
+
+        if titleTarget != titleSource:
             # rename current subcat
-            move(title, titleTarget, "Éxupéry > Exupéry: move category")
+            moveCategory(titleSource, titleTarget, "Éxupéry > Exupéry: move category")
 
         # recursive
-        subcategory = pywikibot.Category(site, title)
+        subcategory = pywikibot.Category(site, titleSource)
         rename(subcategory)
 
 
