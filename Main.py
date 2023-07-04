@@ -17,7 +17,7 @@ def move(title, newCategoryName, summary, noredirect=True):
     )
     except:
         print("bof man", newCategoryName)
-        
+
     return page
 
 # rename
@@ -33,7 +33,7 @@ def rename(cat):
         # renaming subcat
         if subcat.text != newText:
             subcat.text = newText    
-            subcat.save("Éxupéry", "Exupéry")
+            subcat.save("Éxupéry > Exupéry: edit category")
         
         titleTarget = title.replace("Éxupéry", "Exupéry")
         if titleTarget != title:
@@ -46,10 +46,10 @@ def rename(cat):
                 newText = text.replace("Éxupéry", "Exupéry")
                 if page.text != newText:
                     page.text = newText    
-                    page.save("Éxupéry > Exupéry: edit")
+                    page.save("Éxupéry > Exupéry: edit file")
 
             # rename current subcat
-            move(title, titleTarget, "Éxupéry > Exupéry: move")
+            move(title, titleTarget, "Éxupéry > Exupéry: move category")
 
         # recursive
         subcategory = pywikibot.Category(site, title)
